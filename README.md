@@ -12,6 +12,8 @@ A bash script that takes care of the following things for preparing a machine-
 - Disables Notification Center
 - Enables restart on power failure.
 
+![Screenshot](https://raw.githubusercontent.com/local-projects/prepMac/screenshots/screen01.png)
+
 ## Running
 Copy the scipt or clone the repo and run with SUDO access
 
