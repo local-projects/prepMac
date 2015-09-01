@@ -1,6 +1,6 @@
 # prepMac
 
-A bash script that takes care of the following things for preparing a machine-
+Simple bash script that takes care of the following things for preparing a machine for installation use-
 
 - Empties Dock and adds Safari, System Preferences, and Terminal icons.
 - Disables "Crash Reporting" dialog.
