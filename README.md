@@ -1,8 +1,8 @@
 # prepMac
 
-A bash script that takes care of the following things for preparing a machine-
+A simple bash script that takes care of the following things for preparing a machine for exhibition use:
 
-- Empties Dock and adds Safari, System Preferences, and Terminal icons.
+- Completely empties Dock then adds Safari, System Preferences, and Terminal shortcuts.
 - Disables "Crash Reporting" dialog.
 - Disables "Reopen Windows?" shutdown dialog.
 - Disables application state restoration dialog.
@@ -15,10 +15,12 @@ A bash script that takes care of the following things for preparing a machine-
 ![Screenshot](https://raw.githubusercontent.com/local-projects/prepMac/screenshots/screen01.png)
 
 ## Running
-Copy the scipt or clone the repo and run with SUDO access
+Just run in Terminal with one line by downloading remotely with curl:
 
-	sudo bash prepMac.sh
+	curl -s https://cdn.rawgit.com/local-projects/prepMac/master/prepMac.sh | sudo bash
 	
+Or run normally after cloning or downloading with `sudo bash prepMac.sh`.
+
 The script prints it's actions to the console and each step may provide relevent feedback depending on your current system configuration (EG: If Notification Center has already been disabled and removed it will say it cannot find it for removal.)
 
 ## Customizing
