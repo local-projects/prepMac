@@ -18,6 +18,7 @@ killall Dock
 printf "\n- Unloading and disabling crash reporting...\n"
 launchctl unload -w /System/Library/LaunchDaemons/com.apple.DiagnosticReportCleanUpDaemon.plist
 defaults write com.apple.CrashReporter DialogType none
+sudo chmod 000 /System/Library/CoreServices/Problem\ Reporter.app
 
 # "Repoen Windows" dialog
 printf "\n- Disabling \"reopen windows?\" dialog...\n"
@@ -26,7 +27,7 @@ defaults write com.apple.loginwindow TALLogoutSavesState -bool false
 
 # Aplication state restoration dialog
 printf "\n- Disabling restore application state on crash, globally...\n"
-defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool 'false'
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
 
 # Software Update
 printf "\n- Disabling software updates...\n"
