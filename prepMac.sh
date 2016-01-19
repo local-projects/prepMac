@@ -19,6 +19,7 @@ defaults write com.apple.loginwindow TALLogoutSavesState -bool false
 ### Aplication state restoration dialog
 printf "\n\e[0m\e[36m\e[4mDisabling restore application state on crash, globally...\e[0m\n\e[2m"
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
+defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -boolean false # Seems to need "-boolean" ?
 
 ### Software Update
 printf "\n\e[0m\e[36m\e[4mDisabling software updates...\e[0m\n\e[2m"
