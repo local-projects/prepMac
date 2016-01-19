@@ -26,4 +26,4 @@ Just run in Terminal with one line by downloading remotely with curl:
 	
 Or run normally after cloning or downloading with `sudo bash prepMac.sh`.
 
-The script prints its actions to the console and each step may provide relevent feedback depending on your current system configuration (EG: If Notification Center has already been disabled and removed it will say it cannot find it for removal.)
+The script prints it's actions to the console and each step may provide relevent feedback depending on your current system configuration (EG: If Notification Center has already been disabled and removed it will say it cannot find it for removal.)
