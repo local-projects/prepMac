@@ -17,7 +17,7 @@ A simple bash script that takes care of the following things for preparing a mac
 ## Running
 Just run in Terminal with one line by downloading remotely with curl:
 
-	curl -s https://cdn.rawgit.com/local-projects/prepMac/master/prepMac.sh | sudo bash
+	curl -s https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh | sudo bash
 	
 Or run normally after cloning or downloading with `sudo bash prepMac.sh`.
 
