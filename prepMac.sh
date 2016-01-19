@@ -33,7 +33,11 @@ sudo -S systemsetup -setsleep off
 
 ### Screen Saver
 printf "\n\e[0m\e[36m\e[4mDisabling screen saver...\e[0m \n\e[2m"
+defaults -currentHost delete com.apple.screensaver
+rm ~/Library/Preferences/ByHost/com.apple.screensaver.*
+rm ~/Library/Preferences/ByHost/com.apple.ScreenSaver.*
 defaults -currentHost write com.apple.screensaver idleTime 0
+sudo defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
 
 ### GateKeeper
 printf "\n\e[0m\e[36m\e[4mDisabling GateKeeper...\e[0m\n\e[2m"
