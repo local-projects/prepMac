@@ -1,93 +1,130 @@
 #!/bin/bash
+
+#################################################
+#   prepMac.sh - 2016                           #
+#   https://github.com/local-projects/prepMac   #
+#################################################
+
+### Style formatting function
+function style {
+	if		[ "$1" = "title" ]
+		then
+			printf "\n\n\e[0m\e[1m\e[7m --- $2 --- \e[0m\n\n"
+	elif	[ "$1" = "header" ]
+		then
+			printf "\n\e[0m\e[36m\e[4m$2\e[0m\n\e[2m" # Leaves next lines DIM
+	elif	[ "$1" = "antiheader" ]
+		then
+			printf "\n\e[0m\e[31m\e[4m$2\e[0m\n\e[2m" # Leaves next lines DIM
+	elif	[ "$1" = "prompt" ]
+		then
+			echo
+			printf "\e[0m\e[35m$2\e[0m"
+			read -n 1 -p "" $3
+	elif	[ "$1" = "reset" ]
+		then
+			printf "\e[0m"
+	fi
+}
+
+### Check if run with SUDO
+if [ "$EUID" -ne 0 ]
+  then
+	  style "antiheader" "Error: prepMac must be run with SUDO priveleges."
+	  style "reset"
+	  exit
+fi
+
+### Starting title
 now="$(date +"%r")"
+style "title" "BEGINNING MACHINE PREP - $now"
 
-printf "\n\n\e[1m\e[7m --- BEGINNING MACHINE PREP - $now --- \e[0m\n\n"
-
-### Crash Reporting
-printf "\n\e[36m\e[4mUnloading and disabling crash reporting...\e[0m\n\e[2m"
+### Crash Reporting ############################################################
+style "header" "Unloading and disabling crash reporting..."
 # Disable the dialogue from opening
 defaults write com.apple.CrashReporter DialogType none
 # Fully disable the diagnostic reporter?
 launchctl unload -w /System/Library/LaunchDaemons/com.apple.DiagnosticReportCleanUpDaemon.plist
-sudo chmod 000 /System/Library/CoreServices/Problem\ Reporter.app
+chmod 000 /System/Library/CoreServices/Problem\ Reporter.app
 
-### "Repoen Windows" dialog
-printf "\n\e[0m\e[36m\e[4mDisabling\"reopen windows?\" dialog...\e[0m\n\e[2m"
+### "Repoen Windows" dialog ####################################################
+style "header" "Disabling\"reopen windows?\" dialog..."
 defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool false
 defaults write com.apple.loginwindow TALLogoutSavesState -bool false
 
-### Aplication state restoration dialog
-printf "\n\e[0m\e[36m\e[4mDisabling restore application state on crash, globally...\e[0m\n\e[2m"
+### Aplication state restoration dialog ########################################
+style "header" "Disabling restore application state on crash, globally..."
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -bool false
 defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -boolean false # Seems to need "-boolean" ?
 
-### Software Update
-printf "\n\e[0m\e[36m\e[4mDisabling software updates...\e[0m\n\e[2m"
+### Software Update ############################################################
+style "header" "Disabling software updates..."
 defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool false
 defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool false
 defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
-sudo softwareupdate --schedule off
+softwareupdate --schedule off
 
-### Sleep
-printf "\n\e[0m\e[36m\e[4mDisabling sleep...\e[0m \n\e[2m"
-sudo -S systemsetup -setsleep off
+### Sleep ######################################################################
+style "header" "Disabling sleep..."
+systemsetup -setsleep off
+systemsetup -setcomputersleep Off > /dev/null
 
-### Screen Saver
-printf "\n\e[0m\e[36m\e[4mDisabling screen saver...\e[0m \n\e[2m"
+### Screen Saver ###############################################################
+style "header" "Disabling screen saver..."
 defaults -currentHost delete com.apple.screensaver
 rm ~/Library/Preferences/ByHost/com.apple.screensaver.*
 rm ~/Library/Preferences/ByHost/com.apple.ScreenSaver.*
 defaults -currentHost write com.apple.screensaver idleTime 0
-sudo defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
+defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
 
-### GateKeeper
-printf "\n\e[0m\e[36m\e[4mDisabling GateKeeper...\e[0m\n\e[2m"
+### GateKeeper #################################################################
+style "header" "Disabling GateKeeper..."
 spctl --master-disable
 
-### Notification Center
-printf "\n\e[0m\e[36m\e[4mUnloading and disabling notification center...\e[0m\n\e[2m"
-launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist
+### Notification Center ########################################################
+style "header" "Unloading and disabling notification center..."
+launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 killall NotificationCenter
 
-### Restart on Power Failure
-printf "\n\e[0m\e[36m\e[4mEnabling restart on power failure...\e[0m\n\e[2m"
+### Restart on Power Failure ###################################################
+style "header" "Enabling restart on power failure..."
 systemsetup -setrestartpowerfailure on
-printf "\e[0m"
 
-### Bluetooth
-echo
-printf "\e[0m"
-read -n 1 -p "Disable Bluetooth? [y / n]: " should_disable_bluetooth
+### Restart on computer freeze #################################################
+style "header" "Enabling restart on computer freeze..."
+systemsetup -setrestartfreeze on
+
+### Bluetooth ##################################################################
+style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
 echo
 if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
 	then
-		printf "\n\e[0m\e[36m\e[4mDisabling Bluetooth...\e[0m\n\e[2m"
+		style "header" "Disabling Bluetooth..."
 		# Set bluetooth pref to off
 		defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0
-		# Kill the bluetooth server process	
+		# Kill the bluetooth server process
 		killall blued
 		# Unload the daemon
 		launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
 	else
-		printf "\n- Skipping Bluetooth changes.\n"
+		style "antiheader" "Skipping Bluetooth changes."
 fi
 
-### Screen Sharing - NOTE: allows access for all users
-echo
-printf "\e[0m"
-read -n 1 -p "Enable Screen Sharing via Remote Management? [y / n]: " should_enable_screen_sharing
+### Screen Sharing - NOTE: allows access for all users #########################
+style "prompt" "Enable Screen Sharing for all users via Remote Management? [\e[5my / n\e[25m]: " should_enable_screen_sharing
 echo
 if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing" = "Y" ]
 	then
-		printf "\n\e[0m\e[36m\e[4mEnabling Screen Sharing...\e[0m\n\e[2m"
-		sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -allUsers
+		style "header" "Enabling Screen Sharing..."
+		/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -specifiedUsers
 	else
-		printf "\n- Skipping Screen Sharing.\n"
+		style "antiheader" "Skipping Screen Sharing."
 fi
 
-### Enable Auto Login
+### Enable Auto Login ##########################################################
 echo
-printf "\e[0mTo enable AUTO LOGIN please use System Preferences\n"
+printf "\e[0mNOTE: To enable AUTO LOGIN please use System Preferences\n"
 
+### Ending title
 now="$(date +"%r")"
-printf "\n\e[0m\e[1m\e[5m\e[7m --- COMPLETED MACHINE PREP - $now --- \e[0m\n\n"
+style "title" "COMPLETED MACHINE PREP - $now"
