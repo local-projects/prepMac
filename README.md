@@ -23,8 +23,8 @@ And offers the options to:
 
 Download and run with SUDO from terminal with a single line:
 
-```bash
-wget https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; sudo bash prepMac.sh; rm prepMac.sh;
+```sh
+curl -O https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; sudo bash prepMac.sh; rm prepMac.sh;
 ```
 
 The script prints its actions to the console and each step may provide relevent feedback depending on your current system configuration (EG: If Notification Center has already been disabled and removed it will say it cannot find it for removal.)
