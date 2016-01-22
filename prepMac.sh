@@ -121,7 +121,8 @@ style "prompt" "Enable Screen Sharing for all users via Remote Management? [\e[5
 if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing" = "Y" ]
 	then
 		style "header" "Enabling Screen Sharing..."
-		sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -specifiedUsers
+		sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -on -configure -allowAccessFor -allUsers -configure -restart -agent -privs -all
+
 	else
 		style "antiheader" "Skipping Screen Sharing."
 fi
