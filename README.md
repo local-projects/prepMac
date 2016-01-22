@@ -25,8 +25,8 @@ And offers the options to:
 
 Download and run with a single line:
 
-```
-wget https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; bash prepMac.sh; rm prepMac.sh;
+```sh
+curl -O https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; bash prepMac.sh; rm prepMac.sh;
 ```
 
 Many of the operations inside of prepMac require sudo privelege. You will be prompted when running if needed.

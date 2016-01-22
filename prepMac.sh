@@ -33,13 +33,10 @@ now="$(date +"%r")"
 style "title" "BEGINNING MACHINE PREP - $now"
 
 ### Get password for SUDO commands.
-if [ "$EUID" -ne 0 ]
-  then
-  	style "antiheader" "Most of prepMac.sh needs elevated access- please enter your SUDO password"
-  	style "reset"
-		sudo -v
-		while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-fi
+style "antiheader" "Some prepMac.sh operations need elevated SUDO access."
+style "reset"
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ### Crash Reporting ############################################################
 style "header" "Unloading and disabling crash reporting..."
@@ -130,7 +127,7 @@ if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing
 fi
 
 ### Dock #######################################################################
-style "prompt" "Cleanup extra Dock icons? [y / n]: " should_clean_dock
+style "prompt" "Cleanup extra Dock icons? [\e[5my / n\e[25m]: " should_clean_dock
 
 if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
 	then
@@ -143,7 +140,7 @@ if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
 		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/System Preferences.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Utilities/Terminal.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 		### Add any other project apps here ###
-		style "prompt" "Add project's app to dock? [y / n]: " should_add_custom_app
+		style "prompt" "Add YOUR project's app to dock? [\e[5my / n\e[25m]: " should_add_custom_app
 		if [ "$should_add_custom_app" = "y" ] || [ "$should_add_custom_app" = "Y" ]
 			then
 				style "prompt" "Enter app location (ex : /Applications/Utilities/Terminal.app) and press return: " custom_app_location
@@ -157,10 +154,10 @@ fi
 
 ### Additional step helpful info
 style "reset"
-printf "\e[1m\n\nADITIONAL STEPS:\n"
+printf " \e[1m\n\nADITIONAL STEPS AND TIPS:\n"
 style "reset"
-printf "▸ To enable AUTO LOGIN please use \e[1mSystem Preferences > Security & Privacy\e[0m.\n"
-printf "▸ For multi-screen setup you may need to go to:\n\t\e[1mSystem Preferences > Mission Control\e[0m and disable \e[1mDisplays have separate Spaces\e[0m.\n"
+printf " ▸ To enable AUTO LOGIN please use \e[1mSystem Preferences > Security & Privacy\e[0m.\n"
+printf " ▸ For multi-screen setup you may need to go to:\n\t\e[1mSystem Preferences > Mission Control\e[0m and disable \e[1mDisplays have separate Spaces\e[0m.\n"
 style "reset"
 
 ### Ending title
