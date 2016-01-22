@@ -82,6 +82,11 @@ defaults write com.apple.TextEdit RichText -int 0
 defaults write com.apple.TextEdit PlainTextEncoding -int 4
 defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 
+### Desktop wallpaper ##########################################################
+style "header" "Removing desktop image..."
+osascript -e 'tell application "System Events" to set picture of every desktop to ("/Library/Desktop Pictures/Solid Colors/Solid Gray Pro Ultra Dark.png" as POSIX file as alias)'
+sqlite3 ~/Library/Application\ Support/Dock/desktoppicture.db "update data set value = '/Library/Desktop Pictures/Solid Colors/Solid Gray Pro Ultra Dark.png'"
+
 ### GateKeeper #################################################################
 style "header" "Disabling GateKeeper..."
 sudo spctl --master-disable
