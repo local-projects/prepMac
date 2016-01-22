@@ -30,7 +30,7 @@ function style {
 ### Check if run with SUDO
 if [ "$EUID" -ne 0 ]
   then
-	  style "antiheader" "Error: prepMac must be run with SUDO priveleges."
+	  style "antiheader" "Error: prepMac must be run with SUDO priveleges.\n"
 	  style "reset"
 	  exit
 fi
@@ -121,10 +121,17 @@ if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing
 		style "antiheader" "Skipping Screen Sharing."
 fi
 
-### Enable Auto Login ##########################################################
-echo
-printf "\e[0mNOTE: To enable AUTO LOGIN please use System Preferences\n"
+### Additional steps
+style "reset"
+printf "\e[1m\n\nADITIONAL STEPS:\n"
+style "reset"
+printf "▸ To enable AUTO LOGIN please use \e[1mSystem Preferences > Security & Privacy\e[0m.\n"
+printf "▸ To remove all dock icons run the following command:\n\t\e[1mdefaults write com.apple.dock persistent-apps -array ''; killall Dock;\e[0m\n"
+printf "▸ For multi-screen setup you may need to go to:\n\t\e[1mSystem Preferences > Mission Control\e[0m and disable \e[1mDisplays have separate Spaces\e[0m.\n"
+style "reset"
+
 
 ### Ending title
 now="$(date +"%r")"
 style "title" "COMPLETED MACHINE PREP - $now"
+style "reset"
