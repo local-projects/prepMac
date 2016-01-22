@@ -105,12 +105,9 @@ style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetoot
 if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
 	then
 		style "header" "Disabling Bluetooth..."
-		# Set bluetooth pref to off
-		defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0
-		# Kill the bluetooth server process
-		killall blued
-		# Unload the daemon
-		launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist
+		sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0 # Set bluetooth pref to off
+		killall blued # Kill the bluetooth server process
+		launchctl unload /System/Library/LaunchDaemons/com.apple.blued.plist # Unload the daemon
 	else
 		style "antiheader" "Skipping Bluetooth changes."
 fi
