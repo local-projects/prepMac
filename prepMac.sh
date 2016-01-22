@@ -27,7 +27,6 @@ function style {
 	fi
 }
 
-
 ### Starting title
 now="$(date +"%r")"
 
@@ -156,7 +155,6 @@ if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
 		style "antiheader" "Skipping Dock cleanup."
 fi
 
-
 ### Additional step helpful info
 style "reset"
 printf "\e[1m\n\nADITIONAL STEPS:\n"
@@ -164,7 +162,6 @@ style "reset"
 printf "▸ To enable AUTO LOGIN please use \e[1mSystem Preferences > Security & Privacy\e[0m.\n"
 printf "▸ For multi-screen setup you may need to go to:\n\t\e[1mSystem Preferences > Mission Control\e[0m and disable \e[1mDisplays have separate Spaces\e[0m.\n"
 style "reset"
-
 
 ### Ending title
 now="$(date +"%r")"
