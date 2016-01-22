@@ -11,6 +11,7 @@ A simple bash script that takes care of the following things for preparing a mac
 - Disables sleep
 - Disables screen saver
 - Makes TextEdit default to Plain Text
+- Replaces desktop image with dark grey
 - Disables GateKeeper ("unauthorized developer" access.)
 - Disables Notification Center
 - Enables restart on power failure and computer freeze
