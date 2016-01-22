@@ -20,24 +20,27 @@ function style {
 		then
 			echo
 			printf "\e[0m\e[35m$2\e[0m"
-			read -n 1 -p "" $3
+			read -p "" $3
 	elif	[ "$1" = "reset" ]
 		then
 			printf "\e[0m"
 	fi
 }
 
-### Check if run with SUDO
-if [ "$EUID" -ne 0 ]
-  then
-	  style "antiheader" "Error: prepMac must be run with SUDO priveleges."
-	  style "reset"
-	  exit
-fi
 
 ### Starting title
 now="$(date +"%r")"
+
 style "title" "BEGINNING MACHINE PREP - $now"
+
+### Get password for SUDO commands.
+if [ "$EUID" -ne 0 ]
+  then
+  	style "antiheader" "Most of prepMac.sh needs elevated access- please enter your SUDO password"
+  	style "reset"
+		sudo -v
+		while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+fi
 
 ### Crash Reporting ############################################################
 style "header" "Unloading and disabling crash reporting..."
@@ -59,27 +62,33 @@ defaults write NSGlobalDomain NSQuitAlwaysKeepsWindows -boolean false # Seems to
 
 ### Software Update ############################################################
 style "header" "Disabling software updates..."
-defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool false
-defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool false
-defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
-softwareupdate --schedule off
+sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool false
+sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool false
+sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticCheckEnabled -bool false
+sudo softwareupdate --schedule off
 
 ### Sleep ######################################################################
 style "header" "Disabling sleep..."
-systemsetup -setsleep off
-systemsetup -setcomputersleep Off > /dev/null
+sudo systemsetup -setsleep off
+sudo systemsetup -setcomputersleep Off > /dev/null
 
 ### Screen Saver ###############################################################
 style "header" "Disabling screen saver..."
-defaults -currentHost delete com.apple.screensaver
 rm ~/Library/Preferences/ByHost/com.apple.screensaver.*
 rm ~/Library/Preferences/ByHost/com.apple.ScreenSaver.*
+defaults -currentHost delete com.apple.screensaver
 defaults -currentHost write com.apple.screensaver idleTime 0
-defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
+sudo defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTime 0
+
+### TextEdit defaults ##########################################################
+style "header" "Making TextEdit default to PlainText with UTF-8 encoding..."
+defaults write com.apple.TextEdit RichText -int 0
+defaults write com.apple.TextEdit PlainTextEncoding -int 4
+defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 
 ### GateKeeper #################################################################
 style "header" "Disabling GateKeeper..."
-spctl --master-disable
+sudo spctl --master-disable
 
 ### Notification Center ########################################################
 style "header" "Unloading and disabling notification center..."
@@ -88,15 +97,15 @@ killall NotificationCenter
 
 ### Restart on Power Failure ###################################################
 style "header" "Enabling restart on power failure..."
-systemsetup -setrestartpowerfailure on
+sudo systemsetup -setrestartpowerfailure on
 
 ### Restart on computer freeze #################################################
 style "header" "Enabling restart on computer freeze..."
-systemsetup -setrestartfreeze on
+sudo systemsetup -setrestartfreeze on
 
 ### Bluetooth ##################################################################
 style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
-echo
+
 if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
 	then
 		style "header" "Disabling Bluetooth..."
@@ -112,19 +121,52 @@ fi
 
 ### Screen Sharing - NOTE: allows access for all users #########################
 style "prompt" "Enable Screen Sharing for all users via Remote Management? [\e[5my / n\e[25m]: " should_enable_screen_sharing
-echo
+
 if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing" = "Y" ]
 	then
 		style "header" "Enabling Screen Sharing..."
-		/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -specifiedUsers
+		sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -off -restart -agent -privs -all -allowAccessFor -specifiedUsers
 	else
 		style "antiheader" "Skipping Screen Sharing."
 fi
 
-### Enable Auto Login ##########################################################
-echo
-printf "\e[0mNOTE: To enable AUTO LOGIN please use System Preferences\n"
+### Dock #######################################################################
+style "prompt" "Cleanup extra Dock icons? [y / n]: " should_clean_dock
+
+if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
+	then
+		style "header" "Emptying, populating, and restarting Dock..."
+		# Remove all dock items
+		defaults write com.apple.dock persistent-apps -array ''
+		defaults write com.apple.dock persistent-others -array ''
+		# Add defaults: Safari, System Preferences, and Terminal
+		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Safari.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/System Preferences.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Utilities/Terminal.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+		### Add any other project apps here ###
+		style "prompt" "Add project's app to dock? [y / n]: " should_add_custom_app
+		if [ "$should_add_custom_app" = "y" ] || [ "$should_add_custom_app" = "Y" ]
+			then
+				style "prompt" "Enter app location (ex : /Applications/Utilities/Terminal.app) and press return: " custom_app_location
+				style "header" "Adding $custom_app_location to the dock..."
+				defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>'$custom_app_location'</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+		fi
+		killall Dock
+	else
+		style "antiheader" "Skipping Dock cleanup."
+fi
+
+
+### Additional step helpful info
+style "reset"
+printf "\e[1m\n\nADITIONAL STEPS:\n"
+style "reset"
+printf "▸ To enable AUTO LOGIN please use \e[1mSystem Preferences > Security & Privacy\e[0m.\n"
+printf "▸ For multi-screen setup you may need to go to:\n\t\e[1mSystem Preferences > Mission Control\e[0m and disable \e[1mDisplays have separate Spaces\e[0m.\n"
+style "reset"
+
 
 ### Ending title
 now="$(date +"%r")"
 style "title" "COMPLETED MACHINE PREP - $now"
+style "reset"
