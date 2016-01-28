@@ -20,6 +20,7 @@ And offers the options to:
 
 - Disable Bluetooth
 - Enable Screen Sharing
+- Enable Remote Access (SSH)
 - Clean up Dock and add your app by location
 
 ## Running

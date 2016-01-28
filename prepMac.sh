@@ -129,6 +129,18 @@ if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing
 		style "antiheader" "Skipping Screen Sharing."
 fi
 
+### SSH Access #########################
+style "prompt" "Enable SSH access via Remote Login? [\e[5my / n\e[25m]: " should_enable_ssh
+
+if [ "$should_enable_ssh" = "y" ] || [ "$should_enable_ssh" = "Y" ]
+	then
+		style "header" "Enabling SSH..."
+		sudo systemsetup -setremotelogin on
+
+	else
+		style "antiheader" "Skipping Screen Sharing."
+fi
+
 ### Dock #######################################################################
 style "prompt" "Cleanup extra Dock icons? [\e[5my / n\e[25m]: " should_clean_dock
 
