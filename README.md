@@ -14,6 +14,7 @@ A simple bash script that takes care of the following things for preparing a mac
 - Replaces desktop image with dark grey
 - Disables GateKeeper ("unauthorized developer" access.)
 - Disables Notification Center
+- Disables the Bluetooth Setup Assistant window
 - Enables restart on power failure and computer freeze
 
 And offers the options to:

@@ -104,6 +104,11 @@ sudo systemsetup -setrestartpowerfailure on
 style "header" "Enabling restart on computer freeze..."
 sudo systemsetup -setrestartfreeze on
 
+### Bluetooth auto find keyboard ###############################################
+style "header" "Disabling the auto Bluetooth Setup Assistant window..."
+sudo defaults write /Library/Preferences/com.apple.Bluetooth BluetoothAutoSeekKeyboard '0'
+sudo defaults write /Library/Preferences/com.apple.Bluetooth BluetoothAutoSeekPointingDevice '0'
+
 ### Bluetooth ##################################################################
 style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
 
