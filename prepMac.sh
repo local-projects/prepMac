@@ -45,6 +45,7 @@ if [ $1 == "-defaults" ]
 		style "antiheader" "Running prepMac with DEFAULT settings (no prompts)!"
 		style "reset"
 		should_default=true
+		should_disable_bluetooth="n"
 fi
 
 ### Crash Reporting ############################################################
@@ -126,7 +127,7 @@ if [ $should_default = false ]
 		style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
 fi
 
-if [ $should_default = true ] || [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
+if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
 	then
 		style "header" "Disabling Bluetooth..."
 		sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0 # Set bluetooth pref to off
