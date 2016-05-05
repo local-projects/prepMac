@@ -40,12 +40,16 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ### Confirm if default settings are being applied.
 should_default=false
-if [ $1 == "-defaults" ]
+
+if [ $# -ne 0 ]
 	then
-		style "antiheader" "Running prepMac with DEFAULT settings (no prompts)!"
-		style "reset"
-		should_default=true
-		should_disable_bluetooth="n"
+		if [ $1 = "-defaults" ]
+			then
+				style "antiheader" "Running prepMac with DEFAULT settings (no prompts)!"
+				style "reset"
+				should_default=true
+				should_disable_bluetooth="n"
+		fi
 fi
 
 ### Crash Reporting ############################################################
