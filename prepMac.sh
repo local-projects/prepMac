@@ -38,6 +38,15 @@ style "reset"
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+### Confirm if default settings are being applied.
+should_default=false
+if [ $1 == "-defaults" ]
+	then
+		style "antiheader" "Running prepMac with DEFAULT settings (no prompts)!"
+		style "reset"
+		should_default=true
+fi
+
 ### Crash Reporting ############################################################
 style "header" "Unloading and disabling crash reporting..."
 # Disable the dialogue from opening
@@ -110,9 +119,14 @@ sudo defaults write /Library/Preferences/com.apple.Bluetooth BluetoothAutoSeekKe
 sudo defaults write /Library/Preferences/com.apple.Bluetooth BluetoothAutoSeekPointingDevice '0'
 
 ### Bluetooth ##################################################################
-style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
 
-if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
+
+if [ $should_default = false ]
+	then
+		style "prompt" "Disable Bluetooth? [\e[5my / n\e[25m]: " should_disable_bluetooth
+fi
+
+if [ $should_default = true ] || [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" ]
 	then
 		style "header" "Disabling Bluetooth..."
 		sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist ControllerPowerState 0 # Set bluetooth pref to off
@@ -123,21 +137,26 @@ if [ "$should_disable_bluetooth" = "y" ] || [ "$should_disable_bluetooth" = "Y" 
 fi
 
 ### Screen Sharing - NOTE: allows access for all users #########################
-style "prompt" "Enable Screen Sharing for all users via Remote Management? [\e[5my / n\e[25m]: " should_enable_screen_sharing
+if [ $should_default = false ]
+	then
+	style "prompt" "Enable Screen Sharing for all users via Remote Management? [\e[5my / n\e[25m]: " should_enable_screen_sharing
+fi
 
-if [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing" = "Y" ]
+if [ $should_default = true ] || [ "$should_enable_screen_sharing" = "y" ] || [ "$should_enable_screen_sharing" = "Y" ]
 	then
 		style "header" "Enabling Screen Sharing..."
 		sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -access -on -configure -allowAccessFor -allUsers -configure -restart -agent -privs -all
-
 	else
 		style "antiheader" "Skipping Screen Sharing."
 fi
 
 ### SSH Access #########################
-style "prompt" "Enable SSH access via Remote Login? [\e[5my / n\e[25m]: " should_enable_ssh
+if [ $should_default = false ]
+	then
+	style "prompt" "Enable SSH access via Remote Login? [\e[5my / n\e[25m]: " should_enable_ssh
+fi
 
-if [ "$should_enable_ssh" = "y" ] || [ "$should_enable_ssh" = "Y" ]
+if [ $should_default = true ] || [ "$should_enable_ssh" = "y" ] || [ "$should_enable_ssh" = "Y" ]
 	then
 		style "header" "Enabling SSH..."
 		sudo systemsetup -setremotelogin on
@@ -147,9 +166,13 @@ if [ "$should_enable_ssh" = "y" ] || [ "$should_enable_ssh" = "Y" ]
 fi
 
 ### Dock #######################################################################
-style "prompt" "Cleanup extra Dock icons? [\e[5my / n\e[25m]: " should_clean_dock
+if [ $should_default = false ]
+	then
+		style "prompt" "Cleanup extra Dock icons? [\e[5my / n\e[25m]: " should_clean_dock
+fi
 
-if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
+
+if [ $should_default = true ] || [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
 	then
 		style "header" "Emptying, populating, and restarting Dock..."
 		# Remove all dock items
@@ -159,14 +182,6 @@ if [ "$should_clean_dock" = "y" ] || [ "$should_clean_dock" = "Y" ]
 		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Safari.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/System Preferences.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 		defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Utilities/Terminal.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-		### Add any other project apps here ###
-		style "prompt" "Add YOUR project's app to dock? [\e[5my / n\e[25m]: " should_add_custom_app
-		if [ "$should_add_custom_app" = "y" ] || [ "$should_add_custom_app" = "Y" ]
-			then
-				style "prompt" "Enter app location (ex : /Applications/Utilities/Terminal.app) and press return: " custom_app_location
-				style "header" "Adding $custom_app_location to the dock..."
-				defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>'$custom_app_location'</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-		fi
 		killall Dock
 	else
 		style "antiheader" "Skipping Dock cleanup."
