@@ -4,6 +4,7 @@
 
 A simple bash script that takes care of the following things for preparing a machine for exhibition use:
 
+- Enables auto-restart on system freeze
 - Disables "Crash Reporting" dialog
 - Disables "Reopen Windows?" shutdown dialog
 - Disables application state restoration dialog
@@ -19,6 +20,7 @@ A simple bash script that takes care of the following things for preparing a mac
 
 And offers the options to:
 
+- Reboot the machine every day at 4:00AM
 - Disable Bluetooth
 - Enable Screen Sharing
 - Enable Remote Access (SSH)
@@ -26,13 +28,13 @@ And offers the options to:
 
 ## Running
 
-Download and run with a single line:
+Download and run by copying the following into Terminal:
 
 ```sh
-curl -O https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; bash prepMac.sh; rm prepMac.sh;
+curl -O https://raw.githubusercontent.com/local-projects/prepMac/master/prepMac.sh; source prepMac.sh; rm prepMac.sh;
 ```
 
-__NOTE:__ Run with the flag `-defaults` to execute without optional prompts.
+__NOTE:__ Run with the flag `-defaults` to execute without optional prompts. These defaults will NOT disable Bluetooth and NOT enable the 4:00AM system restart.
 
 Many of the operations inside of prepMac require sudo privelege. You will be prompted when running if needed.
 
