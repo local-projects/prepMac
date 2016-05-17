@@ -71,9 +71,11 @@ launchctl unload -w /System/Library/LaunchDaemons/com.apple.DiagnosticReportClea
 chmod 000 /System/Library/CoreServices/Problem\ Reporter.app
 
 ### "Repoen Windows" dialog ####################################################
-style "header" "Disabling\"reopen windows?\" dialog..."
+style "header" "Disabling\"Reopen windows when logging back in?\" dialog and prevent it from being reset..."
 defaults write com.apple.loginwindow LoginwindowLaunchesRelaunchApps -bool false
 defaults write com.apple.loginwindow TALLogoutSavesState -bool false
+chmod a-w ~/Library/Preferences/com.apple.loginwindow.plist
+sudo chown root ~/Library/Preferences/com.apple.loginwindow.plist 
 
 ### Aplication state restoration dialog ########################################
 style "header" "Disabling restore application state on crash, globally..."
@@ -111,7 +113,7 @@ sudo defaults write /Library/Preferences/com.apple.screensaver loginWindowIdleTi
 ### Notification Center ########################################################
 style "header" "Unloading and disabling notification center..."
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
-killall NotificationCenter
+killall NotificationCenter 
 
 ### Bluetooth auto find keyboard ###############################################
 style "header" "Disabling the auto Bluetooth Setup Assistant window..."
